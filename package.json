@@ -14,5 +14,8 @@
     "jenkins"
   ],
   "author": "Amit Kumar Gupta",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cypress-cucumon-runner": "file:../cypress-cucumon-runner"
+  }
 }

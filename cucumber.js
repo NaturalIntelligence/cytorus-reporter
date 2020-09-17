@@ -1,23 +1,40 @@
 ///@ts-check
+const fs = require("fs");
 const path = require("path");
+const {PATHS: _P, FNs: _F} = require("cypress-cucumon-runner/Constants");
 
 const {forEachRule,forEachScenarioIn,forEachStep} = require("./Iterators");
 
 module.exports = class Cucumber{
     constructor(reportPath){
         this.reportPath = reportPath;
+        this.basePath = _F.ABS( _P.FEATURES_PATH );
+        this.inputLocation = _F.ABS( _P.DETAIL_RESULT_PATH);
     }
 
-    report(feature){
-        const reportJson = [reportFeature(feature)];
-        //TODO: what if there are 2 feature files with same name in different folders
-        const reportName = path.join(this.reportPath, path.basename( this.fileName(feature.fileName), ".feature")) + ".json";
-        cy.task("cucumon_runner_debug", "Writing to " + reportName);
-        cy.writeFile( reportName , reportJson);
+    /**
+     * Read detailed result from cucumon runner work directory.
+     * And generates cucmber reports based on the result
+     */
+    async report(){
+        const files = fs.readdirSync(this.inputLocation); 
+        for (const file of files) {
+            const feature = require( path.join( this.inputLocation, file) );
+            //feature.fileName is an absolute path
+            const reportName = path.join(this.reportPath, path.basename( this.fileName(feature.fileName), ".feature")) + ".json";
+            fs.writeFile( reportName , JSON.stringify([reportFeature(feature)]), err => {
+                if(err) {
+                    console.log("Unable to write cucumber report for feature: " + feature.statement);
+                    throw err;
+                }else{
+                    console.log("Cucumber report for feature " + feature.statement,"is generated successfully");
+                }
+            });
+        }
     }
 
     fileName(featureFileName){
-        return featureFileName.substr(__featuresPath.length).replace("/", "_");
+        return featureFileName.substr(this.basePath.length).replace("/", "_");
     }
 }
 
