@@ -19,15 +19,16 @@ module.exports = class Cucumber{
     async report(){
         const files = fs.readdirSync(this.inputLocation); 
         for (const file of files) {
+            _F.debug("Generating cucumber report for feature file: " + file);
             const feature = require( path.join( this.inputLocation, file) );
             //feature.fileName is an absolute path
             const reportName = path.join(this.reportPath, path.basename( this.fileName(feature.fileName), ".feature")) + ".json";
             fs.writeFile( reportName , JSON.stringify([reportFeature(feature)]), err => {
                 if(err) {
-                    console.log("Unable to write cucumber report for feature: " + feature.statement);
+                    console.error("Unable to write cucumber report for feature: " + feature.statement);
                     throw err;
                 }else{
-                    console.log("Cucumber report for feature " + feature.statement,"is generated successfully");
+                    _F.debug("Generated Cucumber Report for feature: " + feature.statement);
                 }
             });
         }
