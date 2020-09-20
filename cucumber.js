@@ -1,7 +1,7 @@
 ///@ts-check
 const fs = require("fs");
 const path = require("path");
-const {PATHS: _P, FNs: _F} = require("cypress-cucumon-runner/Constants");
+const {PATHS: _P, FNs: _F} = require("cytorus/Constants");
 
 const {forEachRule,forEachScenarioIn,forEachStep} = require("./Iterators");
 
