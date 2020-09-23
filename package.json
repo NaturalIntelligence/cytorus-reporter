@@ -1,6 +1,6 @@
 {
   "name": "cytorus-reporter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provide various reporterting tools to process Cytorus result",
   "main": "index.js",
   "scripts": {
@@ -21,6 +21,6 @@
   "author": "Amit Kumar Gupta (https://amitkumargupta.work/)",
   "license": "MIT",
   "dependencies": {
-    "cytorus": "0.0.1"
+    "cytorus": "^0.1.0"
   }
 }
