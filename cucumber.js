@@ -18,12 +18,14 @@ module.exports = class Cucumber{
      */
     async report(){
         const files = fs.readdirSync(this.inputLocation); 
-        for (const file of files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
             _F.debug("Generating cucumber report for feature file: " + file);
             const feature = require( path.join( this.inputLocation, file) );
             //feature.fileName is an absolute path
-            const reportName = path.join(this.reportPath, path.basename( this.fileName(feature.fileName), ".feature")) + ".json";
-            fs.writeFile( reportName , JSON.stringify([reportFeature(feature)]), err => {
+            const reportPath = path.join(this.reportPath, i+".json") ;
+            //_F.debug("Report: " + reportPath);
+            fs.writeFile( reportPath , JSON.stringify([reportFeature(feature)]), err => {
                 if(err) {
                     console.error("Unable to write cucumber report for feature: " + feature.statement);
                     throw err;
@@ -32,10 +34,6 @@ module.exports = class Cucumber{
                 }
             });
         }
-    }
-
-    fileName(featureFileName){
-        return featureFileName.substr(this.basePath.length).replace("/", "_");
     }
 }
 
