@@ -1,15 +1,15 @@
 ///@ts-check
 const fs = require("fs");
 const path = require("path");
-const {PATHS: _P, FNs: _F} = require("cytorus/Constants");
+const fs_util = require("./fs_util");
 
 const {forEachRule,forEachScenarioIn,forEachStep} = require("./Iterators");
 
 module.exports = class Cucumber{
-    constructor(reportPath){
+    constructor(reportPath, basePath, inputFileLocation){
         this.reportPath = reportPath;
-        this.basePath = _F.ABS( _P.FEATURES_PATH );
-        this.inputLocation = _F.ABS( _P.DETAIL_RESULT_PATH);
+        this.basePath = basePath;
+        this.inputLocation = inputFileLocation;
     }
 
     /**
@@ -20,17 +20,17 @@ module.exports = class Cucumber{
         const files = fs.readdirSync(this.inputLocation); 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            _F.debug("Generating cucumber report for feature file: " + file);
+            debug("Generating cucumber report for feature file: " + file);
             const feature = require( path.join( this.inputLocation, file) );
             //feature.fileName is an absolute path
             const reportPath = path.join(this.reportPath, i+".json") ;
-            //_F.debug("Report: " + reportPath);
+            //debug("Report: " + reportPath);
             fs.writeFile( reportPath , JSON.stringify([reportFeature(feature)]), err => {
                 if(err) {
                     console.error("Unable to write cucumber report for feature: " + feature.statement);
                     throw err;
                 }else{
-                    _F.debug("Generated Cucumber Report for feature: " + feature.statement);
+                    debug("Generated Cucumber Report for feature: " + feature.statement);
                 }
             });
         }
@@ -41,10 +41,11 @@ module.exports = class Cucumber{
 function reportFeature(feature){
     const featureReportObj =  {
         "keyword": "Feature",
+        "type": "feature",
         "name": feature.statement,
         "description": feature.description,
         "line": feature.lineNumber,
-        "id": feature.statement.replace(/ /,"-"),
+        "id": feature.statement.replace(/ /g,"-"),
         "tags": buildTagObject(feature.tags, feature.lineNumber -1),
         "uri": feature.fileName,
         "elements": []
@@ -64,14 +65,14 @@ function reportFeature(feature){
 
 function reportScenario(scenario){
     const scenarioReportObj = {
-        "id": scenario.statement.replace(/ /,"-"),
+        "id": scenario.statement.replace(/ /g,"-"),
         //"keyword": scenario.keyword,
         "keyword": "Scenario",
+        "type": "scenario",
         "line": scenario.lineNumber,
         "name": scenario.statement,
         "description": scenario.description,
         "tags": buildTagObject(scenario.tags, scenario.lineNumber -1),
-        "type": "scenario",
         "steps": []
     }
     forEachStep(scenario, step => {
@@ -109,7 +110,7 @@ function reportExamples(examples){
 function reportStep(step){
     const stepReportObj = {
         "arguments": [],
-        "id": step.statement.replace(/ /,"-"),
+        "id": step.statement.replace(/ /g,"-"),
         "keyword": step.keyword + " ",
         "line": step.lineNumber,
         "name": step.statement,
@@ -178,4 +179,9 @@ function buildTagObject(arr, lineNum){
             line: lineNum
         })
     }
+}
+
+const DEBUG_COLOR = "\x1b[38;5;129;1m";
+const debug = msg => {
+    if(process.env["DEBUG"] === "cytorus") console.log( DEBUG_COLOR, "DEBUG::" , msg,"\x1b[0m");
 }
