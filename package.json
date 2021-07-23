@@ -1,6 +1,6 @@
 {
   "name": "cytorus-reporter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Provide various reporterting tools to process Cytorus result",
   "main": "index.js",
   "scripts": {

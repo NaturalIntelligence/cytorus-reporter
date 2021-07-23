@@ -76,7 +76,7 @@ function reportScenario(scenario){
         "steps": []
     }
     forEachStep(scenario, step => {
-        scenarioReportObj.steps.push( reportStep(step) );
+        if(step.status !== "skipped") scenarioReportObj.steps.push( reportStep(step) );
     })
     return scenarioReportObj;
 }
