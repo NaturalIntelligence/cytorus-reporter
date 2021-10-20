@@ -1,15 +1,17 @@
 ///@ts-check
 const fs = require("fs");
 const path = require("path");
-const fs_util = require("./fs_util");
+// const fs_util = require("./fs_util");
 
 const {forEachRule,forEachScenarioIn,forEachStep} = require("./Iterators");
 
 module.exports = class Cucumber{
-    constructor(reportPath, basePath, inputFileLocation){
+    constructor(reportPath, inputJsonPath, options){
         this.reportPath = reportPath;
-        this.basePath = basePath;
-        this.inputLocation = inputFileLocation;
+        this.inputLocation = inputJsonPath;
+        this.options = Object.assign({}, options, {
+            screenshot : false
+        })
     }
 
     /**
@@ -127,13 +129,11 @@ function reportStep(step){
         //     "value": "a string",
         //     "line": 5
         // },
-        // "embeddings": [ //to embed a screen shot within the report
-        //     {
-        //       "mime_type": "image/png",
-        //       "data": "Zm9v"
-        //     }
-        // ],
+        
+        
+        
     }
+    addEmbeded(step, stepReportObj);
     if(step.arg){
         const content = step.arg.raw || step.arg.content;
         if(step.arg.type === 'DocString'){
@@ -178,6 +178,17 @@ function buildTagObject(arr, lineNum){
             name: arr[i],
             line: lineNum
         })
+    }
+}
+
+function addEmbeded(step, stepReportObj){
+    if(step.screenshot && this.options.screenshot){
+        stepReportObj.embeddings = [
+            {
+                "mime_type": "image/png",
+                "data": fs.readFileSync(step.screenshot).toString('base64')
+            }
+        ]
     }
 }
 

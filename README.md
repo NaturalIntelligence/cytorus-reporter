@@ -10,6 +10,9 @@ Use
 ```js
 const CucumerReporter = require("cytorus-reporter/cucumber");
 //empty the output/report directory
-const cucumerReporter = new CucumerReporter(cucumerReportsPath, basePath, inputFileLocation);
+const options = {
+    screenshot : true
+}
+const cucumerReporter = new CucumerReporter(cucumerReportsPath,  inputJsonPath, options);
 await cucumerReporter.report();
 ```
